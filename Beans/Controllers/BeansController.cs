@@ -14,70 +14,70 @@ public class BeansController : ControllerBase
     {
         private readonly BeanService _beanService;
 
+        // Constructor to inject the BeanService
         public BeanController(BeanService beanService)
         {
             _beanService = beanService;
         }
 
-        [HttpGet]
-        public IActionResult GetBeans()
+        // GET: api/bean/{id}
+        [HttpGet("{id}")]
+        public IActionResult GetBeanById(string id)
         {
-            var beans = _beanService.GetBeans();
-            return Ok(beans);
+            var bean = _beanService.GetBeanById(id);
+
+            if (bean == null)
+            {
+                return NotFound($"Bean with ID {id} not found.");
+            }
+
+            return Ok(bean);
         }
 
+
+        // POST: api/bean
         [HttpPost]
-        [HttpPost]
-        public IActionResult AddBean([FromBody] CreateBean bean)
+        public IActionResult AddBean([FromBody] Bean createBean)
         {
-            try
+            if (createBean == null)
             {
-                _beanService.AddBean(bean);
-                return Ok(new { message = "Bean added successfully!" });
+                return BadRequest("Invalid data.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+
+            var bean = _beanService.AddBean(createBean);
+            return CreatedAtAction(nameof(GetBeanById), new { id = bean._id }, bean);
         }
 
+        // PATCH: api/bean/{id}
         [HttpPatch("{id}")]
-        public IActionResult UpdateBean(string id, [FromBody] UpdateBean bean)
+        public IActionResult UpdateBean(string id, [FromBody] UpdateBean updateBean)
         {
-            try
+            if (updateBean == null)
             {
-                var success = _beanService.UpdateBean(id, bean);
-
-                if (!success)
-                    return NotFound(new { message = "Bean not found or no fields to update." });
-
-                return Ok(new { message = "Bean updated successfully!" });
+                return BadRequest("Invalid data.");
             }
-            catch (Exception ex)
+
+            var updatedBean = _beanService.UpdateBean(id, updateBean);
+
+            if (updatedBean == null)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return NotFound($"Bean with ID {id} not found.");
             }
+
+            return Ok(updatedBean);
         }
 
+        // DELETE: api/bean/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteBean(string id)
         {
-            try
-            {
-                var deleted = _beanService.DeleteBean(id);
+            var result = _beanService.DeleteBean(id);
 
-                if (!deleted)
-                    return NotFound(new { message = $"Bean with id '{id}' not found." });
-
-                return Ok(new { message = "Bean deleted successfully!" });
-            }
-            catch (Exception ex)
+            if (!result)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return NotFound($"Bean with ID {id} not found.");
             }
+
+            return NoContent(); // Return 204 No Content if deletion is successful
         }
-
     }
-
-
-}

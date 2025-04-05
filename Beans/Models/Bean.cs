@@ -1,6 +1,6 @@
 ﻿namespace Beans.Models
 {
-    public class CreateBean
+    public class Bean
     {
         public string _id { get; set; } = default!;
         public int Index { get; set; }
