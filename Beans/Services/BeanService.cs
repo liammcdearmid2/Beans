@@ -12,14 +12,20 @@ namespace Beans.Services
             _beanRepository = beanRepository;
         }
 
-        // GET: Get a single bean by ID
+        //Get All Beans
+        public async Task<IEnumerable<Bean>> GetAllBeans()
+        {
+            return await _beanRepository.GetAllBeans();
+        }
+
+        //Get a single bean by ID
         public Bean GetBeanById(string id)
         {
             return _beanRepository.GetBeanById(id);
         }
 
 
-        // POST: Add a new bean
+        //Add a new bean
         public Bean AddBean(Bean createBean)
         {
             var bean = new Bean
@@ -37,13 +43,13 @@ namespace Beans.Services
             return _beanRepository.AddBean(bean);
         }
 
-        // PATCH: Update an existing bean
+        //Update an existing bean
         public Bean UpdateBean(string id, UpdateBean updateBean)
         {
             var existingBean = _beanRepository.GetBeanById(id);
             if (existingBean == null)
             {
-                return null; // Or throw an exception based on your error handling strategy
+                return null; //TO-DO: Add exception here
             }
 
             existingBean.Name = updateBean.Name ?? existingBean.Name;
@@ -55,13 +61,13 @@ namespace Beans.Services
             return _beanRepository.UpdateBean(existingBean);
         }
 
-        // DELETE: Delete a bean by ID
+        //Delete a bean by ID
         public bool DeleteBean(string id)
         {
             var existingBean = _beanRepository.GetBeanById(id);
             if (existingBean == null)
             {
-                return false; // Or throw an exception
+                return false; //TO-DO: Add exception here
             }
 
             return _beanRepository.DeleteBean(id);

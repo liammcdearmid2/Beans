@@ -12,14 +12,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<BeanService>();
 builder.Services.AddControllers();
 
-// Get the connection string from appsettings.json
+//Get the connection string from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Register IBeanRepository with the connection string
+//Register IBeanRepository with the connection string
 builder.Services.AddSingleton<IBeanRepository>(provider => new BeanRepository(connectionString));
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

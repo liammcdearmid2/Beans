@@ -14,13 +14,25 @@ public class BeansController : ControllerBase
     {
         private readonly BeanService _beanService;
 
-        // Constructor to inject the BeanService
+        //Constructor to inject the BeanService
         public BeanController(BeanService beanService)
         {
             _beanService = beanService;
         }
 
-        // GET: api/bean/{id}
+        //GET: api/bean
+        [HttpGet]
+        public async Task<IActionResult> GetAllBeans()
+        {
+            var beans = await _beanService.GetAllBeans();
+            if (beans == null || !beans.Any())
+            {
+                return NotFound("No beans found.");
+            }
+            return Ok(beans);
+        }
+
+        //GET: api/bean/{id}
         [HttpGet("{id}")]
         public IActionResult GetBeanById(string id)
         {
@@ -35,7 +47,7 @@ public class BeansController : ControllerBase
         }
 
 
-        // POST: api/bean
+        //POST: api/bean
         [HttpPost]
         public IActionResult AddBean([FromBody] Bean createBean)
         {
@@ -48,7 +60,7 @@ public class BeansController : ControllerBase
             return CreatedAtAction(nameof(GetBeanById), new { id = bean._id }, bean);
         }
 
-        // PATCH: api/bean/{id}
+        //PATCH: api/bean/{id}
         [HttpPatch("{id}")]
         public IActionResult UpdateBean(string id, [FromBody] UpdateBean updateBean)
         {
@@ -67,7 +79,7 @@ public class BeansController : ControllerBase
             return Ok(updatedBean);
         }
 
-        // DELETE: api/bean/{id}
+        //DELETE: api/bean/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteBean(string id)
         {
@@ -78,6 +90,7 @@ public class BeansController : ControllerBase
                 return NotFound($"Bean with ID {id} not found.");
             }
 
-            return NoContent(); // Return 204 No Content if deletion is successful
+            return Ok($"Bean {id} successfully deleted");
         }
     }
+}

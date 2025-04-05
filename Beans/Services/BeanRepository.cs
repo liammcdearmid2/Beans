@@ -1,6 +1,7 @@
 ﻿using Beans.Models;
 using MySql.Data.MySqlClient;
 using Dapper;
+using System.Data;
 
 namespace Beans.Services
 {
@@ -8,13 +9,25 @@ namespace Beans.Services
     {
         private readonly string _connectionString;
 
-        // Constructor to inject the connection string
+        //Constructor to inject the connection string
         public BeanRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        // Get a single bean by ID
+        //Get All Beans
+        public async Task<IEnumerable<Bean>> GetAllBeans()
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var query = "SELECT * FROM Beans";
+
+                return await connection.QueryAsync<Bean>(query);
+            }
+        }
+
+        //Get a single bean by ID
         public Bean GetBeanById(string id)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -25,7 +38,7 @@ namespace Beans.Services
             }
         }
 
-        // Add a new bean
+        //Add a new bean
         public Bean AddBean(Bean bean)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -34,11 +47,11 @@ namespace Beans.Services
                 var query = @"INSERT INTO Beans (_id, `index`, isBOTD, Cost, Image, colour, `Name`, `Description`, Country)
                           VALUES (@_id, @Index, @IsBOTD, @Cost, @Image, @Colour, @Name, @Description, @Country)";
                 connection.Execute(query, bean);
-                return bean; // Return the inserted bean (with the ID, if it's auto-generated)
+                return bean;
             }
         }
 
-        // Update an existing bean
+        //Update an existing bean
         public Bean UpdateBean(Bean bean)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -53,11 +66,11 @@ namespace Beans.Services
                           Country = @Country
                           WHERE _id = @Id";
                 connection.Execute(query, bean);
-                return bean; // Return the updated bean
+                return bean; 
             }
         }
 
-        // Delete a bean by ID
+        //Delete a bean by ID
         public bool DeleteBean(string id)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -65,7 +78,7 @@ namespace Beans.Services
                 connection.Open();
                 var query = "DELETE FROM Beans WHERE _id = @id";
                 var result = connection.Execute(query, new { id });
-                return result > 0; // Returns true if rows are affected (deleted)
+                return result > 0; // Returns true if rows are deleted
             }
         }
     }

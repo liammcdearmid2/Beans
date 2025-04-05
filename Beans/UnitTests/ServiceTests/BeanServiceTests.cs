@@ -1,7 +1,6 @@
 ﻿using Beans.Models;
 using Beans.Services;
 using Moq;
-using Mysqlx.Crud;
 using Xunit;
 
 namespace Beans.UnitTests.ServiceTests
@@ -17,7 +16,40 @@ namespace Beans.UnitTests.ServiceTests
             _beanService = new BeanService(_mockRepository.Object);
         }
 
-        // Test GetBeanById
+        [Fact]
+        public async Task GetAllBeans_ReturnsAllBeans_WhenBeansExist()
+        {
+            // Arrange:
+            var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Americano", Cost = 3.5m },
+            new Bean { _id = "2", Name = "Flat White", Cost = 4.0m }
+        };
+            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(beans);
+
+            // Act:
+            var result = await _beanService.GetAllBeans();
+
+            // Assert: 
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+            Assert.Contains(result, b => b.Name == "Americano");
+            Assert.Contains(result, b => b.Name == "Flat White");
+        }
+
+        [Fact]
+        public async Task GetAllBeans_ReturnsEmpty_WhenNoBeansExist()
+        {
+            // Arrange: 
+            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(new List<Bean>());
+
+            // Act:
+            var result = await _beanService.GetAllBeans();
+
+            // Assert: 
+            Assert.Empty(result);
+        }
+
         [Fact]
         public void GetBeanById_ReturnsBean_WhenBeanExists()
         {
@@ -48,7 +80,6 @@ namespace Beans.UnitTests.ServiceTests
             Assert.Null(result);
         }
 
-        // Test AddBean
         [Fact]
         public void AddBean_AddsNewBean()
         {
@@ -85,7 +116,6 @@ namespace Beans.UnitTests.ServiceTests
             Assert.Equal("125", result._id);
         }
 
-        // Test UpdateBean
         [Fact]
         public void UpdateBean_UpdatesExistingBean()
         {
@@ -120,7 +150,6 @@ namespace Beans.UnitTests.ServiceTests
             Assert.Null(result);
         }
 
-        // Test DeleteBean
         [Fact]
         public void DeleteBean_ReturnsTrue_WhenDeleted()
         {
@@ -150,3 +179,4 @@ namespace Beans.UnitTests.ServiceTests
             Assert.False(result);
         }
     }
+}

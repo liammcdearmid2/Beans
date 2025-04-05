@@ -16,7 +16,41 @@ public class BeanControllerTests
         _controller = new BeanController(_mockService.Object);
     }
 
-    // Test GET by ID
+    [Fact]
+    public async Task GetAllBeans_ReturnsOkResult_WhenBeansExist()
+    {
+        // Arrange
+        var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Espresso", Cost = 3.5m },
+            new Bean { _id = "2", Name = "Latte", Cost = 4.0m }
+        };
+        _mockService.Setup(service => service.GetAllBeans()).ReturnsAsync(beans);
+
+        // Act
+        var result = await _controller.GetAllBeans();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnValue = Assert.IsAssignableFrom<IEnumerable<Bean>>(okResult.Value);
+        Assert.Equal(2, returnValue.Count());
+    }
+
+    [Fact]
+    public async Task GetAllBeans_ReturnsNotFound_WhenNoBeansExist()
+    {
+        // Arrange
+        var beans = new List<Bean>();
+        _mockService.Setup(service => service.GetAllBeans()).ReturnsAsync(beans);
+
+        // Act
+        var result = await _controller.GetAllBeans();
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("No beans found.", notFoundResult.Value);
+    }
+
     [Fact]
     public void GetBeanById_ReturnsOk_WhenBeanExists()
     {
@@ -47,7 +81,6 @@ public class BeanControllerTests
         Assert.IsType<NotFoundObjectResult>(result);
     }
 
-    // Test POST
     [Fact]
     public void AddBean_ReturnsCreatedAtAction_WhenBeanIsCreated()
     {
@@ -64,7 +97,6 @@ public class BeanControllerTests
         Assert.Equal(bean, createdAtActionResult.Value);
     }
 
-    // Test PATCH
     [Fact]
     public void UpdateBean_ReturnsOk_WhenBeanIsUpdated()
     {
@@ -97,7 +129,6 @@ public class BeanControllerTests
         Assert.IsType<NotFoundObjectResult>(result);
     }
 
-    // Test DELETE
     [Fact]
     public void DeleteBean_ReturnsNoContent_WhenDeleted()
     {
