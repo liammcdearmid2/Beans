@@ -59,6 +59,24 @@ public class BeansController : ControllerBase
             }
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBean(string id)
+        {
+            try
+            {
+                var deleted = _beanService.DeleteBean(id);
+
+                if (!deleted)
+                    return NotFound(new { message = $"Bean with id '{id}' not found." });
+
+                return Ok(new { message = "Bean deleted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 
 

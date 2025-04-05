@@ -140,5 +140,19 @@ namespace Beans.Services
                 return rowsAffected > 0;
             }
         }
+
+        public bool DeleteBean(string id)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                var command = new MySqlCommand("DELETE FROM Beans WHERE _id = @_id", connection);
+                command.Parameters.AddWithValue("@_id", id);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+        }
     }
 }
