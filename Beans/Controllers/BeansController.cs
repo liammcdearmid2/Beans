@@ -26,6 +26,20 @@ public class BeansController : ControllerBase
             return Ok(beans);
         }
 
+        [HttpPost]
+        public IActionResult AddBean([FromBody] Bean bean)
+        {
+            try
+            {
+                _beanService.AddBean(bean);
+                return Ok(new { message = "Bean added successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 
 

@@ -43,5 +43,30 @@ namespace Beans.Services
 
             return beans;
         }
+
+        public void AddBean(Bean bean)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = new MySqlCommand(@"
+            INSERT INTO Beans (_id, `index`, isBOTD, Cost, Image, colour, `Name`, `Description`, Country)
+            VALUES (@_id, @index, @isBOTD, @Cost, @Image, @colour, @Name, @Description, @Country)", connection))
+                {
+                    command.Parameters.AddWithValue("@_id", bean._id);
+                    command.Parameters.AddWithValue("@index", bean.Index);
+                    command.Parameters.AddWithValue("@isBOTD", bean.IsBOTD);
+                    command.Parameters.AddWithValue("@Cost", bean.Cost);
+                    command.Parameters.AddWithValue("@Image", bean.Image ?? string.Empty);
+                    command.Parameters.AddWithValue("@colour", bean.Colour ?? string.Empty);
+                    command.Parameters.AddWithValue("@Name", bean.Name ?? string.Empty);
+                    command.Parameters.AddWithValue("@Description", bean.Description ?? string.Empty);
+                    command.Parameters.AddWithValue("@Country", bean.Country ?? string.Empty);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
