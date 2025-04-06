@@ -1,5 +1,6 @@
 ﻿using Beans.Models;
 using MySql.Data.MySqlClient;
+using System.Linq;
 
 namespace Beans.Services
 {
@@ -84,6 +85,31 @@ namespace Beans.Services
             }
 
             return _beanRepository.DeleteBean(id);
+        }
+
+        public async Task<Bean> PickBeanOfTheDay()
+        {
+            var allBeans = await _beanRepository.GetAllBeans();
+            var todaysBOTD = _beanRepository.GetPreviousBOTD(); 
+
+            //Exclude today's BOTD from potential winners as the winner cannot be the same
+            var potentialWinners = allBeans.Where(x => x._id != todaysBOTD?._id).ToList();
+
+            if (!potentialWinners.Any())
+            {
+                throw new InvalidOperationException("No potential winners available to select as Bean of the Day.");
+            }
+
+            var random = new Random();
+            var winningBean = potentialWinners[random.Next(potentialWinners.Count)];
+
+            //Reset BOTD bool before selecting new one
+            _beanRepository.ResetBOTD();
+
+            //Update selected bean with BOTD set to true and update date
+            _beanRepository.UpdateBeanAsBOTD(winningBean._id, true, DateTime.UtcNow.Date);
+
+            return winningBean;
         }
     }
 }

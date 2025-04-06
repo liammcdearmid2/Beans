@@ -62,7 +62,7 @@ public class BeansController : ControllerBase
         }
 
         //POST: api/beans
-        //Post a list of beans
+        //POST a list of beans
         [HttpPost]
         public IActionResult AddListOfBeans([FromBody] List<Bean> addListOfBeans)
         {
@@ -106,6 +106,21 @@ public class BeansController : ControllerBase
             }
 
             return Ok($"Bean {id} successfully deleted");
+        }
+
+        // POST: api/bean/pick-botd
+        [HttpPost("pick-botd")]
+        public IActionResult PickBeanOfTheDayWinner()
+        {
+            try
+            {
+                var bean = _beanService.PickBeanOfTheDay();
+                return Ok(bean);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error assigning Bean of the Day: {ex.Message}");
+            }
         }
     }
 }

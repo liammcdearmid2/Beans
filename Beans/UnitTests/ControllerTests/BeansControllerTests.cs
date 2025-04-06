@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Beans.Models;
 using Beans.Services;
 using static Beans.Controllers.BeansController;
+using Beans.Controllers;
 
 public class BeanControllerTests
 {
@@ -198,5 +199,37 @@ public class BeanControllerTests
         // Assert
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Bean list is invalid or empty.", badRequest.Value);
+    }
+
+    [Fact]
+    public void SelectBeanOfTheDay_ReturnsOk_WhenBeanIsSelected()
+    {
+        // Arrange
+        var winningBean = new Bean { _id = "2", Name = "Bean 2" };
+        _mockService.Setup(service => service.PickBeanOfTheDay()).ReturnsAsync(winningBean);
+
+        // Act
+        var result = _controller.PickBeanOfTheDayWinner();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedBean = Assert.IsType<Bean>(okResult.Value);
+        Assert.Equal("2", returnedBean._id);
+        Assert.Equal("Bean 2", returnedBean.Name);
+    }
+
+    [Fact]
+    public void SelectBeanOfTheDay_ReturnsBadRequest_WhenExceptionIsThrown()
+    {
+        // Arrange
+        var errorMessage = "No potential winners available";
+        _mockService.Setup(service => service.PickBeanOfTheDay()).Throws(new Exception(errorMessage));
+
+        // Act
+        var result = _controller.PickBeanOfTheDayWinner();
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal($"Error selecting Bean of the Day: {errorMessage}", badRequestResult.Value);
     }
 }

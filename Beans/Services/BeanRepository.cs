@@ -81,5 +81,36 @@ namespace Beans.Services
                 return result > 0; // Returns true if rows are deleted
             }
         }
+
+        //Bean of the day logic:
+
+        //Set the winning bean as bean of the day
+        public void UpdateBeanAsBOTD(string id, bool isBOTD, DateTime previousWinnerDate)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+
+            var query = @"UPDATE Beans 
+                  SET isBOTD = @isBOTD, 
+                      PreviousWinnerDate = @PreviousWinnerDate 
+                  WHERE _id = @Id";
+
+            connection.Execute(query, new { Id = id, isBOTD, PreviousWinnerDate = previousWinnerDate });
+        }
+
+        //Retrieve BOTD
+        public Bean GetPreviousBOTD()
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            string query = "SELECT * FROM Beans WHERE isBOTD = TRUE LIMIT 1";
+            return connection.QuerySingleOrDefault<Bean>(query);
+        }
+
+        public void ResetBOTD()
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            string query = "UPDATE Beans SET isBOTD = FALSE";
+            connection.Execute(query);
+        }
     }
 }

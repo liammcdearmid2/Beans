@@ -9,5 +9,9 @@ namespace Beans.Services
         Bean AddBean(Bean bean);
         Bean UpdateBean(Bean bean);
         bool DeleteBean(string id);
+        //Bean of the day logic:
+        Bean GetPreviousBOTD();
+        void UpdateBeanAsBOTD(string id, bool isBOTD, DateTime previousWinnerDate);
+        void ResetBOTD();
     }
 }

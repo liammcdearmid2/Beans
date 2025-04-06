@@ -202,6 +202,77 @@ namespace Beans.UnitTests.ServiceTests
             Assert.Equal("Bean A", result[0].Name);
             Assert.Equal("Bean B", result[1].Name);
         }
+        [Fact]
+        public async Task SelectBeanOfTheDay_ShouldReturnBean_WhenThereArePotentialWinners()
+        {
+            // Arrange
+            var allBeans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Bean 1" },
+            new Bean { _id = "2", Name = "Bean 2" },
+            new Bean { _id = "3", Name = "Bean 3" }
+        };
+
+            var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
+
+            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(allBeans);
+            _mockRepository.Setup(repo => repo.GetPreviousBOTD()).Returns(todaysBOTD);
+            _mockRepository.Setup(repo => repo.ResetBOTD()).Verifiable();
+            _mockRepository.Setup(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>())).Verifiable();
+
+            // Act
+            var result = await _beanService.PickBeanOfTheDay();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("2", result._id);
+            _mockRepository.Verify(repo => repo.ResetBOTD(), Times.Once);
+            _mockRepository.Verify(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), true, It.IsAny<DateTime>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SelectBeanOfTheDay_ShouldThrowException_WhenNoPotentialWinners()
+        {
+            // Arrange
+            var allBeans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Bean 1" }
+        };
+
+            var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
+
+            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(allBeans);
+            _mockRepository.Setup(repo => repo.GetPreviousBOTD()).Returns(todaysBOTD);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _beanService.PickBeanOfTheDay());
+        }
+
+        [Fact]
+        public async Task SelectBeanOfTheDay_ShouldNotSelectTheSameBean_AsPreviousBOTD()
+        {
+            // Arrange
+            var allBeans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Bean 1" },
+            new Bean { _id = "2", Name = "Bean 2" }
+        };
+
+            var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
+
+            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(allBeans);
+            _mockRepository.Setup(repo => repo.GetPreviousBOTD()).Returns(todaysBOTD);
+            _mockRepository.Setup(repo => repo.ResetBOTD()).Verifiable();
+            _mockRepository.Setup(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>())).Verifiable();
+
+            // Act
+            var result = await _beanService.PickBeanOfTheDay();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("2", result._id);
+            _mockRepository.Verify(repo => repo.ResetBOTD(), Times.Once);
+            _mockRepository.Verify(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), true, It.IsAny<DateTime>()), Times.Once);
+        }
     }
-}
 }
