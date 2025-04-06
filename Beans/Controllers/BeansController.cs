@@ -48,6 +48,7 @@ public class BeansController : ControllerBase
 
 
         //POST: api/bean
+        //POST single bean
         [HttpPost]
         public IActionResult AddBean([FromBody] Bean createBean)
         {
@@ -58,6 +59,20 @@ public class BeansController : ControllerBase
 
             var bean = _beanService.AddBean(createBean);
             return CreatedAtAction(nameof(GetBeanById), new { id = bean._id }, bean);
+        }
+
+        //POST: api/beans
+        //Post a list of beans
+        [HttpPost]
+        public IActionResult AddListOfBeans([FromBody] List<Bean> addListOfBeans)
+        {
+            if (addListOfBeans == null || !addListOfBeans.Any())
+            {
+                return BadRequest("Bean list is invalid or empty.");
+            }
+
+            var addedBeans = _beanService.AddListOfBeans(addListOfBeans);
+            return Ok(addedBeans);
         }
 
         //PATCH: api/bean/{id}

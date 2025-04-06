@@ -156,4 +156,47 @@ public class BeanControllerTests
         // Assert
         Assert.IsType<NotFoundObjectResult>(result);
     }
+
+    [Fact]
+    public void AddListOfBeans_ReturnsOk_WhenValidList()
+    {
+        // Arrange
+        var inputBeans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Bean A" },
+            new Bean { _id = "2", Name = "Bean B" }
+        };
+
+        _mockService.Setup(s => s.AddListOfBeans(inputBeans)).Returns(inputBeans);
+
+        // Act
+        var result = _controller.AddListOfBeans(inputBeans);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedBeans = Assert.IsAssignableFrom<List<Bean>>(okResult.Value);
+        Assert.Equal(2, returnedBeans.Count);
+    }
+
+    [Fact]
+    public void AddListOfBeans_ReturnsBadRequest_WhenListIsNull()
+    {
+        // Act
+        var result = _controller.AddListOfBeans(null);
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Bean list is invalid or empty.", badRequest.Value);
+    }
+
+    [Fact]
+    public void AddListOfBeans_ReturnsBadRequest_WhenListIsEmpty()
+    {
+        // Act
+        var result = _controller.AddListOfBeans(new List<Bean>());
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Bean list is invalid or empty.", badRequest.Value);
+    }
 }

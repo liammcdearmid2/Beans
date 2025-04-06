@@ -178,5 +178,30 @@ namespace Beans.UnitTests.ServiceTests
             // Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public void AddListOfBeans_ReturnsAddedBeans()
+        {
+            // Arrange
+            var inputBeans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Bean A" },
+            new Bean { _id = "2", Name = "Bean B" }
+        };
+
+            foreach (var bean in inputBeans)
+            {
+                _mockRepository.Setup(r => r.AddBean(bean)).Returns(bean);
+            }
+
+            // Act
+            var result = _beanService.AddListOfBeans(inputBeans);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Equal("Bean A", result[0].Name);
+            Assert.Equal("Bean B", result[1].Name);
+        }
     }
+}
 }

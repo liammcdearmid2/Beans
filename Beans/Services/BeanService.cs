@@ -43,6 +43,19 @@ namespace Beans.Services
             return _beanRepository.AddBean(bean);
         }
 
+        //Add a list of beans
+        public List<Bean> AddListOfBeans(List<Bean> beans)
+        {
+            var addedBeans = new List<Bean>();
+
+            foreach (var bean in beans)
+            {
+                addedBeans.Add(_beanRepository.AddBean(bean));
+            }
+
+            return addedBeans;
+        }
+
         //Update an existing bean
         public Bean UpdateBean(string id, UpdateBean updateBean)
         {
