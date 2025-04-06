@@ -49,7 +49,7 @@ namespace Beans.Services
             var existingBean = _beanRepository.GetBeanById(id);
             if (existingBean == null)
             {
-                return null; //TO-DO: Add exception here
+                throw new KeyNotFoundException($"Bean with ID '{id}' not found.");
             }
 
             existingBean.Name = updateBean.Name ?? existingBean.Name;
@@ -67,7 +67,7 @@ namespace Beans.Services
             var existingBean = _beanRepository.GetBeanById(id);
             if (existingBean == null)
             {
-                return false; //TO-DO: Add exception here
+                throw new KeyNotFoundException($"Bean with ID '{id}' not found.");
             }
 
             return _beanRepository.DeleteBean(id);
