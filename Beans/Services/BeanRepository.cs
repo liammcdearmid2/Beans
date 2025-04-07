@@ -105,7 +105,7 @@ namespace Beans.Services
             string query = "SELECT * FROM Beans WHERE isBOTD = TRUE LIMIT 1";
             return connection.QuerySingleOrDefault<Bean>(query);
         }
-
+        //Reset to ensure only one bean set as BOTD
         public void ResetBOTD()
         {
             using var connection = new MySqlConnection(_connectionString);

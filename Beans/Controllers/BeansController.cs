@@ -12,10 +12,10 @@ public class BeansController : ControllerBase
     [ApiController]
     public class BeanController : ControllerBase
     {
-        private readonly BeanService _beanService;
+        private readonly IBeanService _beanService;
 
         //Constructor to inject the BeanService
-        public BeanController(BeanService beanService)
+        public BeanController(IBeanService beanService)
         {
             _beanService = beanService;
         }
@@ -108,14 +108,17 @@ public class BeansController : ControllerBase
             return Ok($"Bean {id} successfully deleted");
         }
 
-        // POST: api/bean/pick-botd
-        [HttpPost("pick-botd")]
-        public IActionResult PickBeanOfTheDayWinner()
+        //POST: api/bean/pick-botd
+        public async Task<IActionResult> PickBeanOfTheDayWinner()
         {
             try
             {
-                var bean = _beanService.PickBeanOfTheDay();
-                return Ok(bean);
+                var beanOfTheDay = await _beanService.PickBeanOfTheDay();
+                if (beanOfTheDay == null)
+                {
+                    return NotFound("No beans found.");
+                }
+                return Ok(beanOfTheDay);
             }
             catch (Exception ex)
             {

@@ -8,7 +8,7 @@ namespace Beans.UnitTests.ServiceTests
     public class BeanServiceTests
     {
         private readonly Mock<IBeanRepository> _mockRepository;
-        private readonly BeanService _beanService;
+        private readonly IBeanService _beanService;
 
         public BeanServiceTests()
         {
@@ -19,18 +19,15 @@ namespace Beans.UnitTests.ServiceTests
         [Fact]
         public async Task GetAllBeans_ReturnsAllBeans_WhenBeansExist()
         {
-            // Arrange:
             var beans = new List<Bean>
-        {
-            new Bean { _id = "1", Name = "Americano", Cost = 3.5m },
-            new Bean { _id = "2", Name = "Flat White", Cost = 4.0m }
-        };
+            {
+                new Bean { _id = "1", Name = "Americano", Cost = 3.5m },
+                new Bean { _id = "2", Name = "Flat White", Cost = 4.0m }
+            };
             _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(beans);
 
-            // Act:
             var result = await _beanService.GetAllBeans();
 
-            // Assert: 
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
             Assert.Contains(result, b => b.Name == "Americano");
@@ -40,28 +37,22 @@ namespace Beans.UnitTests.ServiceTests
         [Fact]
         public async Task GetAllBeans_ReturnsEmpty_WhenNoBeansExist()
         {
-            // Arrange: 
             _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(new List<Bean>());
 
-            // Act:
             var result = await _beanService.GetAllBeans();
 
-            // Assert: 
             Assert.Empty(result);
         }
 
         [Fact]
         public void GetBeanById_ReturnsBean_WhenBeanExists()
         {
-            // Arrange
             var beanId = "123";
             var bean = new Bean { _id = beanId, Name = "Espresso", Cost = 2.50m };
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(bean);
 
-            // Act
             var result = _beanService.GetBeanById(beanId);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(beanId, result._id);
         }
@@ -69,21 +60,17 @@ namespace Beans.UnitTests.ServiceTests
         [Fact]
         public void GetBeanById_ReturnsNull_WhenBeanDoesNotExist()
         {
-            // Arrange
             var beanId = "123";
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns((Bean)null);
 
-            // Act
             var result = _beanService.GetBeanById(beanId);
 
-            // Assert
             Assert.Null(result);
         }
 
         [Fact]
         public void AddBean_AddsNewBean()
         {
-            // Arrange
             var createBean = new Bean
             {
                 _id = "125",
@@ -95,23 +82,11 @@ namespace Beans.UnitTests.ServiceTests
                 Description = "Strong coffee",
                 Country = "USA"
             };
-            var bean = new Bean
-            {
-                _id = "125",
-                Name = "Americano",
-                Cost = 2.75m,
-                Index = 1,
-                IsBOTD = true,
-                Colour = "Black",
-                Description = "Strong coffee",
-                Country = "USA"
-            };
+            var bean = createBean;
             _mockRepository.Setup(repo => repo.AddBean(It.IsAny<Bean>())).Returns(bean);
 
-            // Act
             var result = _beanService.AddBean(createBean);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("125", result._id);
         }
@@ -119,99 +94,80 @@ namespace Beans.UnitTests.ServiceTests
         [Fact]
         public void UpdateBean_UpdatesExistingBean()
         {
-            // Arrange
             var beanId = "123";
             var updateBean = new UpdateBean { Name = "Cappuccino", Cost = 3.00m };
             var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = 2.50m };
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(existingBean);
             _mockRepository.Setup(repo => repo.UpdateBean(It.IsAny<Bean>())).Returns(existingBean);
 
-            // Act
             var result = _beanService.UpdateBean(beanId, updateBean);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Cappuccino", result.Name);
             Assert.Equal(3.00m, result.Cost);
         }
 
         [Fact]
-        public void UpdateBean_ReturnsNull_WhenBeanNotFound()
+        public void UpdateBean_Throws_WhenBeanNotFound()
         {
-            // Arrange
             var beanId = "123";
             var updateBean = new UpdateBean { Name = "Cappuccino" };
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns((Bean)null);
 
-            // Act
-            var result = _beanService.UpdateBean(beanId, updateBean);
-
-            // Assert
-            Assert.Null(result);
+            Assert.Throws<KeyNotFoundException>(() => _beanService.UpdateBean(beanId, updateBean));
         }
 
         [Fact]
         public void DeleteBean_ReturnsTrue_WhenDeleted()
         {
-            // Arrange
             var beanId = "123";
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(new Bean());
             _mockRepository.Setup(repo => repo.DeleteBean(beanId)).Returns(true);
 
-            // Act
             var result = _beanService.DeleteBean(beanId);
 
-            // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void DeleteBean_ReturnsFalse_WhenNotFound()
+        public void DeleteBean_Throws_WhenNotFound()
         {
-            // Arrange
             var beanId = "123";
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns((Bean)null);
 
-            // Act
-            var result = _beanService.DeleteBean(beanId);
-
-            // Assert
-            Assert.False(result);
+            Assert.Throws<KeyNotFoundException>(() => _beanService.DeleteBean(beanId));
         }
 
         [Fact]
         public void AddListOfBeans_ReturnsAddedBeans()
         {
-            // Arrange
             var inputBeans = new List<Bean>
-        {
-            new Bean { _id = "1", Name = "Bean A" },
-            new Bean { _id = "2", Name = "Bean B" }
-        };
+            {
+                new Bean { _id = "1", Name = "Bean A" },
+                new Bean { _id = "2", Name = "Bean B" }
+            };
 
             foreach (var bean in inputBeans)
             {
                 _mockRepository.Setup(r => r.AddBean(bean)).Returns(bean);
             }
 
-            // Act
             var result = _beanService.AddListOfBeans(inputBeans);
 
-            // Assert
             Assert.Equal(2, result.Count);
             Assert.Equal("Bean A", result[0].Name);
             Assert.Equal("Bean B", result[1].Name);
         }
+
         [Fact]
-        public async Task SelectBeanOfTheDay_ShouldReturnBean_WhenThereArePotentialWinners()
+        public async Task PickBeanOfTheDay_ShouldReturnBean_WhenThereArePotentialWinners()
         {
-            // Arrange
             var allBeans = new List<Bean>
-        {
-            new Bean { _id = "1", Name = "Bean 1" },
-            new Bean { _id = "2", Name = "Bean 2" },
-            new Bean { _id = "3", Name = "Bean 3" }
-        };
+            {
+                new Bean { _id = "1", Name = "Bean 1" },
+                new Bean { _id = "2", Name = "Bean 2" },
+                new Bean { _id = "3", Name = "Bean 3" }
+            };
 
             var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
 
@@ -220,59 +176,24 @@ namespace Beans.UnitTests.ServiceTests
             _mockRepository.Setup(repo => repo.ResetBOTD()).Verifiable();
             _mockRepository.Setup(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>())).Verifiable();
 
-            // Act
             var result = await _beanService.PickBeanOfTheDay();
 
-            // Assert
             Assert.NotNull(result);
-            Assert.Equal("2", result._id);
+            Assert.NotEqual(todaysBOTD._id, result._id);
             _mockRepository.Verify(repo => repo.ResetBOTD(), Times.Once);
             _mockRepository.Verify(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), true, It.IsAny<DateTime>()), Times.Once);
         }
 
         [Fact]
-        public async Task SelectBeanOfTheDay_ShouldThrowException_WhenNoPotentialWinners()
+        public async Task PickBeanOfTheDay_ShouldThrowException_WhenNoPotentialWinners()
         {
-            // Arrange
-            var allBeans = new List<Bean>
-        {
-            new Bean { _id = "1", Name = "Bean 1" }
-        };
-
+            var allBeans = new List<Bean> { new Bean { _id = "1", Name = "Bean 1" } };
             var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
 
             _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(allBeans);
             _mockRepository.Setup(repo => repo.GetPreviousBOTD()).Returns(todaysBOTD);
 
-            // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _beanService.PickBeanOfTheDay());
-        }
-
-        [Fact]
-        public async Task SelectBeanOfTheDay_ShouldNotSelectTheSameBean_AsPreviousBOTD()
-        {
-            // Arrange
-            var allBeans = new List<Bean>
-        {
-            new Bean { _id = "1", Name = "Bean 1" },
-            new Bean { _id = "2", Name = "Bean 2" }
-        };
-
-            var todaysBOTD = new Bean { _id = "1", Name = "Bean 1" };
-
-            _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(allBeans);
-            _mockRepository.Setup(repo => repo.GetPreviousBOTD()).Returns(todaysBOTD);
-            _mockRepository.Setup(repo => repo.ResetBOTD()).Verifiable();
-            _mockRepository.Setup(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>())).Verifiable();
-
-            // Act
-            var result = await _beanService.PickBeanOfTheDay();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("2", result._id);
-            _mockRepository.Verify(repo => repo.ResetBOTD(), Times.Once);
-            _mockRepository.Verify(repo => repo.UpdateBeanAsBOTD(It.IsAny<string>(), true, It.IsAny<DateTime>()), Times.Once);
         }
     }
 }

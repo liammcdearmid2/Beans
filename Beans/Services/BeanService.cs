@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Beans.Services
 {
-    public class BeanService
+    public class BeanService: IBeanService
     {
         private readonly IBeanRepository _beanRepository;
 
@@ -100,6 +100,7 @@ namespace Beans.Services
                 throw new InvalidOperationException("No potential winners available to select as Bean of the Day.");
             }
 
+            //Pick a random winner
             var random = new Random();
             var winningBean = potentialWinners[random.Next(potentialWinners.Count)];
 
