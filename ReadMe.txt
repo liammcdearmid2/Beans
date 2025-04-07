@@ -14,7 +14,7 @@ The API connects to an AWS RDS MySQL database.
 
 The connection string is included in the appsettings.json file but needs amending.
 
-As this is held in a public repository, I have provided the credentials to connect to the database in the separate cover note.
+As this is held in a public repository, I have provided the credentials to connect to the database in the separate cover note (see Section 3).
 
 Swagger UI:
 Swagger UI is enabled for testing and interacting with the API. Once the API is running, you can access Swagger at http://localhost:5000/swagger.
