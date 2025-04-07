@@ -3,19 +3,19 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using Beans.Models;
 using Beans.Services;
-using static Beans.Controllers.BeansController;
+using Beans.Controllers;
 
 namespace Beans.UnitTests.ControllerTests
 {
     public class BeanControllerTests
     {
         private readonly Mock<IBeanService> _mockService;
-        private readonly BeanController _controller;
+        private readonly BeansController _controller;
 
         public BeanControllerTests()
         {
             _mockService = new Mock<IBeanService>();
-            _controller = new BeanController(_mockService.Object);
+            _controller = new BeansController(_mockService.Object);
         }
 
         [Fact]
