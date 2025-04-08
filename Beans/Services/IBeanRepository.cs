@@ -13,5 +13,6 @@ namespace Beans.Services
         Bean GetPreviousBOTD();
         void UpdateBeanAsBOTD(string id, bool isBOTD, DateTime previousWinnerDate);
         void ResetBOTD();
+        Task<IEnumerable<Bean>> SearchBeans(string name = null, string description = null, string country = null);
     }
 }

@@ -25,6 +25,12 @@ namespace Beans.Services
             return _beanRepository.GetBeanById(id);
         }
 
+        //Search db feature
+        public async Task<IEnumerable<Bean>> SearchBeans(string name = null, string description = null, string country = null)
+        {
+            return await _beanRepository.SearchBeans(name, description, country);
+        }
+
 
         //Add a new bean
         public Bean AddBean(Bean createBean)

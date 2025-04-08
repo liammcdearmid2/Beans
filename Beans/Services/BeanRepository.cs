@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Beans.Services
 {
@@ -35,6 +36,42 @@ namespace Beans.Services
                 connection.Open();
                 var query = "SELECT * FROM Beans WHERE _id = @id";
                 return connection.QuerySingleOrDefault<Bean>(query, new { id });
+            }
+        }
+
+        //search method
+        public async Task<IEnumerable<Bean>> SearchBeans(string name = null, string description = null, string country = null)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                var sql = "SELECT * FROM Beans WHERE 1=1";
+
+                //Adding search conditions
+                if (!string.IsNullOrEmpty(name))
+                {
+                    sql += " AND `Name` LIKE @Name";
+                }
+
+                if (!string.IsNullOrEmpty(description))
+                {
+                    sql += " AND `Description` LIKE @Description";
+                }
+
+                if (!string.IsNullOrEmpty(country))
+                {
+                    sql += " AND `Country` LIKE @Country";
+                }
+
+                //Execute query:
+                var result = await connection.QueryAsync<Bean>(sql, new
+                {
+                    Name = "%" + name + "%",
+                    Description = "%" + description + "%",
+                    Country = "%" + country + "%"
+                });
+
+                //Return result and convert to list
+                return result.ToList();
             }
         }
 

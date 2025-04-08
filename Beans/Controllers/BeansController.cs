@@ -42,6 +42,18 @@ public class BeansController : ControllerBase
         return Ok(bean);
     }
 
+    //Search db
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchBeans([FromQuery] string name = null, [FromQuery] string description = null, [FromQuery] string country = null)
+    {
+        var beans = await _beanService.SearchBeans(name, description, country);
+        if (beans.Any())
+        {
+            return Ok(beans);
+        }
+        return NotFound("No beans found matching the search criteria.");
+    }
+
     // POST: 
     [HttpPost("singleBean")]
     public IActionResult AddBean([FromBody] Bean createBean)

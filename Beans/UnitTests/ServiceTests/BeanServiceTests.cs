@@ -195,5 +195,66 @@ namespace Beans.UnitTests.ServiceTests
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => _beanService.PickBeanOfTheDay());
         }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsBeans_WhenValidSearchCriteria()
+        {
+            var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Espresso", Description = "Strong coffee", Country = "Italy" },
+            new Bean { _id = "2", Name = "Latte", Description = "Creamy coffee", Country = "USA" }
+        };
+
+            _mockRepository.Setup(repo => repo.SearchBeans("Espresso", null, null)).ReturnsAsync(new List<Bean> { beans[0] });
+
+            var result = await _beanService.SearchBeans("Espresso", null, null);
+
+            Assert.Single(result);
+            Assert.Equal("Espresso", result.First().Name);
+        }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsEmpty_WhenNoBeansMatch()
+        {
+            _mockRepository.Setup(repo => repo.SearchBeans("NonExistent", null, null)).ReturnsAsync(new List<Bean>());
+
+            var result = await _beanService.SearchBeans("NonExistent", null, null);
+
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsBeans_WhenValidDescription()
+        {
+            var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Espresso", Description = "Strong coffee", Country = "Italy" },
+            new Bean { _id = "2", Name = "Latte", Description = "Creamy coffee", Country = "USA" }
+        };
+
+            _mockRepository.Setup(repo => repo.SearchBeans(null, "Strong coffee", null)).ReturnsAsync(new List<Bean> { beans[0] });
+
+            var result = await _beanService.SearchBeans(null, "Strong coffee", null);
+
+            Assert.Single(result);
+            Assert.Equal("Espresso", result.First().Name);
+        }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsBeans_WhenValidCountry()
+        {
+            var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Espresso", Description = "Strong coffee", Country = "Italy" },
+            new Bean { _id = "2", Name = "Latte", Description = "Creamy coffee", Country = "USA" }
+        };
+
+            _mockRepository.Setup(repo => repo.SearchBeans(null, null, "USA")).ReturnsAsync(new List<Bean> { beans[1] });
+
+            var result = await _beanService.SearchBeans(null, null, "USA");
+
+            Assert.Single(result);
+            Assert.Equal("Latte", result.First().Name);
+        }
     }
 }

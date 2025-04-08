@@ -192,5 +192,35 @@ namespace Beans.UnitTests.ControllerTests
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal($"Error assigning Bean of the Day: {errorMessage}", badRequestResult.Value);
         }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsOkResult_WhenBeansMatchSearchCriteria()
+        {
+            var beans = new List<Bean>
+        {
+            new Bean { _id = "1", Name = "Espresso", Description = "Strong coffee", Country = "Italy" },
+            new Bean { _id = "2", Name = "Latte", Description = "Creamy coffee", Country = "USA" }
+        };
+
+            _mockService.Setup(service => service.SearchBeans("Espresso", null, null)).ReturnsAsync(new List<Bean> { beans[0] });
+
+            var result = await _controller.SearchBeans(name: "Espresso");
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsAssignableFrom<IEnumerable<Bean>>(okResult.Value);
+            Assert.Single(returnValue);
+            Assert.Equal("Espresso", returnValue.First().Name);
+        }
+
+        [Fact]
+        public async Task SearchBeans_ReturnsNotFound_WhenNoBeansMatchSearchCriteria()
+        {
+            _mockService.Setup(service => service.SearchBeans("NonExistent", null, null)).ReturnsAsync(new List<Bean>());
+
+            var result = await _controller.SearchBeans(name: "NonExistent");
+
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("No beans found matching the search criteria.", notFoundResult.Value);
+        }
     }
 }

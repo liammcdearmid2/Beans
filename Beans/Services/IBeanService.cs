@@ -24,5 +24,6 @@ namespace Beans.Services
 
         //Select BOTD
         Task<Bean> PickBeanOfTheDay();
+        Task<IEnumerable<Bean>> SearchBeans(string name = null, string description = null, string country = null);
     }
 }
