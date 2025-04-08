@@ -59,4 +59,24 @@ Method: POST
 URL: /api/beans
 Body: { "_id": "123", "Name": "Espresso", "Cost": 3.5 }
 
+Troubleshooting:
+If you encounter any errors when building or running the project after cloning the repository, try the following steps:
+
+-Restore NuGet Packages
+If you see errors about missing references or packages:
+Right-click on the solution in the Solution Explorer and select "Restore NuGet Packages". Alternatively, open a terminal and run: dotnet restore.
+
+-Ensure .NET SDK is Installed
+Make sure you have the correct version of the .NET SDK installed. This project was built using .NET 8.0.
+You can check your installed SDK version by running: dotnet --version
+
+-Confirm that the connection string in appsettings.json is correct.
+This is located in the cover note document.
+
+-Try Cleaning and Rebuilding the Solution
+Go to Build > Clean Solution, then Build > Rebuild Solution.
+
+-Run as Administrator
+Some permissions issues can be solved by running Visual Studio as administrator.
+
 
