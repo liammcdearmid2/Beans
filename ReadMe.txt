@@ -33,22 +33,44 @@ From the Swagger UI, you can test the available API endpoints.
 Testing the API
 Once the application is running locally, you can test the following endpoints using Swagger UI or a tool like Postman:
 
-GET /api/beans - Retrieves all beans.
+1. GET /api/beans
+Retrieves all beans.
 
-GET /api/beans/{id} - Retrieves a specific bean by ID.
+2. GET /api/beans/{id}
+Retrieves a specific bean by ID.
 
-POST /api/beans - Adds a new bean.
+3. POST /api/beans
+Adds a new bean. You must ensure that the _id does not already exist in the database.
+Request Body Example:
+{ "_id": "123", "Name": "Espresso", "Cost": 3.5 }
 
-PATCH /api/beans/{id} - Updates a bean by ID.
+4. PATCH /api/beans/{id}
+Updates a bean by ID.
 
-DELETE /api/beans/{id} - Deletes a bean by ID.
+5. DELETE /api/beans/{id}
+Deletes a bean by ID.
 
-POST /api/beans/pick-botd - Selects the "Bean of the Day."
+6. POST /api/beans/pick-botd
+Selects the "Bean of the Day."
+
+7. POST /api/beans/multipleBeans
+Adds a list of beans in one request. It ensures that no duplicate _id values are provided in the list.
+
+Request Body Example:
+[ { "_id": "123", "Name": "Espresso", "Cost": "3.5" }, { "_id": "124", "Name": "Cappuccino", "Cost": "4.0" } ]
+
+8. POST /api/beans/singleBean
+Adds a single bean to the database, ensuring the _id is unique.
+Request Body Example:
+{ "_id": "125", "Name": "Latte", "Cost": "4.5" }
+
+9. POST /api/beans/pick-botd
+Selects a random bean from the list of beans and marks it as "Bean of the Day."
 
 Sample Requests:
 Get all beans:
 Method: GET
-URL: /api/allBeans
+URL: /api/beans
 
 Get bean by ID:
 Method: GET
@@ -57,7 +79,14 @@ URL: /api/beans/{id}
 Add a new bean:
 Method: POST
 URL: /api/beans
-Body: { "_id": "123", "Name": "Espresso", "Cost": 3.5 }
+Body:
+{ "_id": "123", "Name": "Espresso", "Cost": 3.5 }
+
+Add multiple beans:
+Method: POST
+URL: /api/beans/multipleBeans
+Body:
+[ { "_id": "123", "Name": "Espresso", "Cost": "3.5" }, { "_id": "124", "Name": "Cappuccino", "Cost": "4.0" } ]
 
 Troubleshooting:
 If you encounter any errors when building or running the project after cloning the repository, try the following steps:
