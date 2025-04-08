@@ -86,15 +86,23 @@ namespace Beans.UnitTests.ControllerTests
         [Fact]
         public void UpdateBean_ReturnsOk_WhenBeanIsUpdated()
         {
+            // Arrange
             var beanId = "123";
             var updateBean = new UpdateBean { Name = "Cappuccino" };
-            var updatedBean = new Bean { _id = beanId, Name = "Cappuccino" };
+            var existingBean = new Bean { _id = beanId, Name = "Espresso" }; 
+            var updatedBean = new Bean { _id = beanId, Name = "Cappuccino" }; 
+
+            _mockService.Setup(service => service.GetBeanById(beanId)).Returns(existingBean);
             _mockService.Setup(service => service.UpdateBean(beanId, updateBean)).Returns(updatedBean);
 
+            // Act
             var result = _controller.UpdateBean(beanId, updateBean);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(updatedBean, okResult.Value);
+            var returnedBean = Assert.IsType<Bean>(okResult.Value);
+            Assert.Equal(updatedBean._id, returnedBean._id);
+            Assert.Equal(updatedBean.Name, returnedBean.Name);
         }
 
         [Fact]

@@ -89,6 +89,15 @@ public class BeansController : ControllerBase
             return BadRequest("Invalid data.");
         }
 
+        //Check if the correct ID is passed
+        var existingBean = _beanService.GetBeanById(id);
+
+        if (existingBean == null)
+        {
+            return NotFound($"Bean with ID {id} not found.");
+        }
+
+        //Proceed with the update using the id passed
         var updatedBean = _beanService.UpdateBean(id, updateBean);
 
         if (updatedBean == null)
