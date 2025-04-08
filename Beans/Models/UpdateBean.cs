@@ -2,6 +2,7 @@
 {
     public class UpdateBean
     {
+        public string _id { get; set; } 
         public int? Index { get; set; }
         public bool? IsBOTD { get; set; }
         public string? Cost { get; set; }

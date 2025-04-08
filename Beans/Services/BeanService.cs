@@ -69,16 +69,21 @@ namespace Beans.Services
             var existingBean = _beanRepository.GetBeanById(id);
             if (existingBean == null)
             {
-                throw new KeyNotFoundException($"Bean with ID '{id}' not found.");
+                return null; // Return null if the bean doesn't exist
             }
 
+            // Apply updates (only non-null properties in the UpdateBean will be applied)
             existingBean.Name = updateBean.Name ?? existingBean.Name;
             existingBean.Cost = updateBean.Cost ?? existingBean.Cost;
-            existingBean.Description = updateBean.Description ?? existingBean.Description;
+            existingBean.Image = updateBean.Image ?? existingBean.Image;
             existingBean.Colour = updateBean.Colour ?? existingBean.Colour;
+            existingBean.Description = updateBean.Description ?? existingBean.Description;
             existingBean.Country = updateBean.Country ?? existingBean.Country;
+            existingBean.IsBOTD = updateBean.IsBOTD ?? existingBean.IsBOTD;
+            existingBean.Index = updateBean.Index ?? existingBean.Index;
 
-            return _beanRepository.UpdateBean(existingBean);
+            // Update in repository and return the updated bean
+            return _beanRepository.UpdateBean(id, existingBean);
         }
 
         //Delete a bean by ID
@@ -115,6 +120,8 @@ namespace Beans.Services
 
             //Update selected bean with BOTD set to true and update date
             _beanRepository.UpdateBeanAsBOTD(winningBean._id, true, DateTime.UtcNow.Date);
+
+            winningBean.IsBOTD = true;
 
             return winningBean;
         }

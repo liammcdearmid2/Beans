@@ -7,7 +7,7 @@ namespace Beans.Services
         Bean GetBeanById(string id);
         Task<IEnumerable<Bean>> GetAllBeans();
         Bean AddBean(Bean bean);
-        Bean UpdateBean(Bean bean);
+        Bean UpdateBean(string id, Bean bean);
         bool DeleteBean(string id);
         //Bean of the day logic:
         Bean GetPreviousBOTD();

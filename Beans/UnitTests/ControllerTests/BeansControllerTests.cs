@@ -88,10 +88,11 @@ namespace Beans.UnitTests.ControllerTests
         {
             // Arrange
             var beanId = "123";
-            var updateBean = new UpdateBean { Name = "Cappuccino" };
-            var existingBean = new Bean { _id = beanId, Name = "Espresso" }; 
-            var updatedBean = new Bean { _id = beanId, Name = "Cappuccino" }; 
+            var updateBean = new UpdateBean { Name = "Cappuccino", Cost = "£3.00" };
+            var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
+            var updatedBean = new Bean { _id = beanId, Name = "Cappuccino", Cost = "£3.00" };
 
+            // Mock the service methods
             _mockService.Setup(service => service.GetBeanById(beanId)).Returns(existingBean);
             _mockService.Setup(service => service.UpdateBean(beanId, updateBean)).Returns(updatedBean);
 
@@ -99,22 +100,29 @@ namespace Beans.UnitTests.ControllerTests
             var result = _controller.UpdateBean(beanId, updateBean);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedBean = Assert.IsType<Bean>(okResult.Value);
-            Assert.Equal(updatedBean._id, returnedBean._id);
-            Assert.Equal(updatedBean.Name, returnedBean.Name);
+            var okResult = Assert.IsType<OkObjectResult>(result);  
+            var returnedBean = Assert.IsType<Bean>(okResult.Value); 
+            Assert.Equal(updatedBean._id, returnedBean._id);  
+            Assert.Equal(updatedBean.Name, returnedBean.Name);  
+            Assert.Equal(updatedBean.Cost, returnedBean.Cost);  
         }
 
         [Fact]
         public void UpdateBean_ReturnsNotFound_WhenBeanDoesNotExist()
         {
+            // Arrange
             var beanId = "123";
             var updateBean = new UpdateBean { Name = "Cappuccino" };
+
+            _mockService.Setup(service => service.GetBeanById(beanId)).Returns((Bean)null);
             _mockService.Setup(service => service.UpdateBean(beanId, updateBean)).Returns((Bean)null);
 
+            // Act
             var result = _controller.UpdateBean(beanId, updateBean);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal($"Bean with ID '{beanId}' not found.", notFoundResult.Value);
         }
 
         [Fact]

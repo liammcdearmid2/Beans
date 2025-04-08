@@ -89,21 +89,36 @@ namespace Beans.Services
         }
 
         //Update an existing bean
-        public Bean UpdateBean(Bean bean)
+        public Bean UpdateBean(string id, Bean bean)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
                 var query = @"UPDATE Beans SET 
-                          `Name` = @Name, 
-                          Cost = @Cost, 
-                          Image = @Image, 
-                          colour = @Colour, 
-                          `Description` = @Description, 
-                          Country = @Country
-                          WHERE _id = @Id";
-                connection.Execute(query, bean);
-                return bean; 
+                      `Name` = @Name, 
+                      `Cost` = @Cost, 
+                      `Image` = @Image, 
+                      `Colour` = @Colour, 
+                      `Description` = @Description, 
+                      `Country` = @Country, 
+                      `IsBOTD` = @IsBOTD,
+                      `Index` = @Index
+                      WHERE _id = @Id";
+
+                connection.Execute(query, new
+                {
+                    Id = id,
+                    Name = bean.Name,
+                    Cost = bean.Cost,
+                    Image = bean.Image,
+                    Colour = bean.Colour,
+                    Description = bean.Description,
+                    Country = bean.Country,
+                    IsBOTD = bean.IsBOTD,
+                    Index = bean.Index
+                });
+
+                return bean;
             }
         }
 

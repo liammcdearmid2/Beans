@@ -92,29 +92,40 @@ namespace Beans.UnitTests.ServiceTests
         }
 
         [Fact]
-        public void UpdateBean_UpdatesExistingBean()
+        public void UpdateBean_ReturnsNull_WhenBeanDoesNotExist()
         {
+            // Arrange
             var beanId = "123";
             var updateBean = new UpdateBean { Name = "Cappuccino", Cost = "£3.00" };
-            var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
-            _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(existingBean);
-            _mockRepository.Setup(repo => repo.UpdateBean(It.IsAny<Bean>())).Returns(existingBean);
 
+            _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns((Bean)null);
+
+            // Act
             var result = _beanService.UpdateBean(beanId, updateBean);
 
-            Assert.NotNull(result);
-            Assert.Equal("Cappuccino", result.Name);
-            Assert.Equal("£3.00", result.Cost);
+            // Assert
+            Assert.Null(result);
         }
 
         [Fact]
-        public void UpdateBean_Throws_WhenBeanNotFound()
+        public void UpdateBean_ReturnsUpdatedBean_WhenBeanExists()
         {
+            // Arrange
             var beanId = "123";
-            var updateBean = new UpdateBean { Name = "Cappuccino" };
-            _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns((Bean)null);
+            var updateBean = new UpdateBean { Name = "Cappuccino", Cost = "£3.00" };
+            var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
+            var updatedBean = new Bean { _id = beanId, Name = "Cappuccino", Cost = "£3.00" };
 
-            Assert.Throws<KeyNotFoundException>(() => _beanService.UpdateBean(beanId, updateBean));
+            _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(existingBean);
+            _mockRepository.Setup(repo => repo.UpdateBean(beanId, It.IsAny<Bean>())).Returns(updatedBean);
+
+            // Act
+            var result = _beanService.UpdateBean(beanId, updateBean);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Cappuccino", result.Name);
+            Assert.Equal("£3.00", result.Cost);
         }
 
         [Fact]
