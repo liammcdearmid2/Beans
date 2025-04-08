@@ -21,8 +21,8 @@ namespace Beans.UnitTests.ServiceTests
         {
             var beans = new List<Bean>
             {
-                new Bean { _id = "1", Name = "Americano", Cost = 3.5m },
-                new Bean { _id = "2", Name = "Flat White", Cost = 4.0m }
+                new Bean { _id = "1", Name = "Americano", Cost = "£3.50" },
+                new Bean { _id = "2", Name = "Flat White", Cost = "£4.00" }
             };
             _mockRepository.Setup(repo => repo.GetAllBeans()).ReturnsAsync(beans);
 
@@ -48,7 +48,7 @@ namespace Beans.UnitTests.ServiceTests
         public void GetBeanById_ReturnsBean_WhenBeanExists()
         {
             var beanId = "123";
-            var bean = new Bean { _id = beanId, Name = "Espresso", Cost = 2.50m };
+            var bean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(bean);
 
             var result = _beanService.GetBeanById(beanId);
@@ -75,7 +75,7 @@ namespace Beans.UnitTests.ServiceTests
             {
                 _id = "125",
                 Name = "Americano",
-                Cost = 2.75m,
+                Cost = "£2.75",
                 Index = 1,
                 IsBOTD = true,
                 Colour = "Black",
@@ -95,8 +95,8 @@ namespace Beans.UnitTests.ServiceTests
         public void UpdateBean_UpdatesExistingBean()
         {
             var beanId = "123";
-            var updateBean = new UpdateBean { Name = "Cappuccino", Cost = 3.00m };
-            var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = 2.50m };
+            var updateBean = new UpdateBean { Name = "Cappuccino", Cost = "£3.00" };
+            var existingBean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
             _mockRepository.Setup(repo => repo.GetBeanById(beanId)).Returns(existingBean);
             _mockRepository.Setup(repo => repo.UpdateBean(It.IsAny<Bean>())).Returns(existingBean);
 
@@ -104,7 +104,7 @@ namespace Beans.UnitTests.ServiceTests
 
             Assert.NotNull(result);
             Assert.Equal("Cappuccino", result.Name);
-            Assert.Equal(3.00m, result.Cost);
+            Assert.Equal("£3.00", result.Cost);
         }
 
         [Fact]

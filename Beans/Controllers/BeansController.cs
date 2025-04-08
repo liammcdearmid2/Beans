@@ -55,16 +55,16 @@ public class BeansController : ControllerBase
         return CreatedAtAction(nameof(GetBeanById), new { id = bean._id }, bean);
     }
 
-    // POST:
+    //POST:
     [HttpPost("multipleBeans")]
-    public IActionResult AddListOfBeans([FromBody] List<Bean> addListOfBeans)
+    public IActionResult AddListOfBeans([FromBody] List<Bean> beans)
     {
-        if (addListOfBeans == null || !addListOfBeans.Any())
+        if (beans == null || !beans.Any())
         {
             return BadRequest("Bean list is invalid or empty.");
         }
 
-        var addedBeans = _beanService.AddListOfBeans(addListOfBeans);
+        var addedBeans = _beanService.AddListOfBeans(beans);
         return Ok(addedBeans);
     }
 

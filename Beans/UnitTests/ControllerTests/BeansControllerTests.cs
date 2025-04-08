@@ -1,9 +1,9 @@
-﻿using Moq;
-using Xunit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Beans.Controllers;
 using Beans.Models;
 using Beans.Services;
-using Beans.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 
 namespace Beans.UnitTests.ControllerTests
 {
@@ -23,8 +23,8 @@ namespace Beans.UnitTests.ControllerTests
         {
             var beans = new List<Bean>
             {
-                new Bean { _id = "1", Name = "Espresso", Cost = 3.5m },
-                new Bean { _id = "2", Name = "Latte", Cost = 4.0m }
+                new Bean { _id = "1", Name = "Espresso", Cost = "£3.50" },
+                new Bean { _id = "2", Name = "Latte", Cost = "£4.00" }
             };
             _mockService.Setup(service => service.GetAllBeans()).ReturnsAsync(beans);
 
@@ -50,7 +50,7 @@ namespace Beans.UnitTests.ControllerTests
         public void GetBeanById_ReturnsOk_WhenBeanExists()
         {
             var beanId = "123";
-            var bean = new Bean { _id = beanId, Name = "Espresso", Cost = 2.50m };
+            var bean = new Bean { _id = beanId, Name = "Espresso", Cost = "£2.50" };
             _mockService.Setup(service => service.GetBeanById(beanId)).Returns(bean);
 
             var result = _controller.GetBeanById(beanId);
@@ -73,8 +73,8 @@ namespace Beans.UnitTests.ControllerTests
         [Fact]
         public void AddBean_ReturnsCreatedAtAction_WhenBeanIsCreated()
         {
-            var createBean = new Bean { _id = "124", Name = "Latte", Cost = 3.00m };
-            var bean = new Bean { _id = "124", Name = "Latte", Cost = 3.00m };
+            var createBean = new Bean { _id = "124", Name = "Latte", Cost = "£3.00" };
+            var bean = new Bean { _id = "124", Name = "Latte", Cost = "£3.00" };
             _mockService.Setup(service => service.AddBean(createBean)).Returns(bean);
 
             var result = _controller.AddBean(createBean);
@@ -136,8 +136,8 @@ namespace Beans.UnitTests.ControllerTests
         {
             var inputBeans = new List<Bean>
             {
-                new Bean { _id = "1", Name = "Bean A" },
-                new Bean { _id = "2", Name = "Bean B" }
+                new Bean { _id = "1", Name = "Bean A", Cost = "£2.00" },
+                new Bean { _id = "2", Name = "Bean B", Cost = "£2.50" }
             };
 
             _mockService.Setup(s => s.AddListOfBeans(inputBeans)).Returns(inputBeans);
@@ -170,14 +170,11 @@ namespace Beans.UnitTests.ControllerTests
         [Fact]
         public async Task SelectBeanOfTheDay_ReturnsOk_WhenBeanIsSelected()
         {
-            // Arrange
-            var winningBean = new Bean { _id = "2", Name = "Bean 2" };
+            var winningBean = new Bean { _id = "2", Name = "Bean 2", Cost = "£3.30" };
             _mockService.Setup(service => service.PickBeanOfTheDay()).ReturnsAsync(winningBean);
 
-            // Act
-            var result = await _controller.PickBeanOfTheDayWinner(); 
+            var result = await _controller.PickBeanOfTheDayWinner();
 
-            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedBean = Assert.IsType<Bean>(okResult.Value);
             Assert.Equal("2", returnedBean._id);
